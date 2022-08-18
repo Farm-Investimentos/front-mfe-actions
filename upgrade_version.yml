@@ -2,12 +2,10 @@ name: Upgrade version
 author: Farm Investimentos
 description: GitHub Action to generate a PR that will increase package.json's version using SEMVER
 
-on:
-  workflow_call:
-    inputs:
-      choice:
-        description: Patch/Minor/Major
-        required: true
+inputs:
+  choice:
+    description: Patch/Minor/Major
+    required: true
 
 runs:
   using: "composite"
