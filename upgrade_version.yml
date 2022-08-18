@@ -2,16 +2,16 @@ name: Upgrade version
 author: Farm Investimentos
 description: GitHub Action to generate a PR that will increase package.json's version using SEMVER
 
-inputs:
-  choice:
-    description: Patch/Minor/Major
-    required: true
+on:
+  workflow_call:
+    inputs:
+      choice:
+        description: Patch/Minor/Major
+        required: true
 
 jobs:
   upgrade_version:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
+    
     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
