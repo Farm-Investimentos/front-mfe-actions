@@ -1,0 +1,43 @@
+name: PR from tag into main
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Tag name'
+        required: true
+        type: string
+
+jobs:
+  reusable_workflow_job:
+    name: Reusable PR from tag into main workflow
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: "us-east-1"
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with: { fetch-depth: 0 }
+
+      - run: git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - run: git config user.name "$GITHUB_ACTOR"
+
+      - name: Reset head to tag
+        run: |
+          git reset --hard ${{ inputs.tag }}
+
+      - name: Push to new branch
+        run: |
+          git push -u origin develop:release-${{ inputs.tag }}-into-main
+
+      - name: Create PR
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "release-${{ inputs.tag }}-into-main"
+          destination_branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_label: "automerge,triggered pr"
+          pr_title: "Pulling ${{ inputs.tag }} into main"
