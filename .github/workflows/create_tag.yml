@@ -1,0 +1,31 @@
+name: Create tag and release PR
+on:
+  workflow_call:
+
+jobs:
+  reusable_workflow_job:
+    name: Reusable Create tag and release PR workflow
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+      
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+      - name: Get version from package.json
+        run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
+      - name: Create tag using value from package.json
+        uses: pkgdeps/git-tag-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_repo: ${{ github.repository }}
+          version: ${{ env.PACKAGE_VERSION }}
+          git_commit_sha: ${{ github.sha }}
+          git_tag_prefix: "v"
+      - name: Create PR from develop to releases
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "develop"
+          destination_branch: "releases"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_label: "release,triggered pr"
+          pr_title: "Pulling ${{ github.ref }} into releases - v${{ env.PACKAGE_VERSION }}"
