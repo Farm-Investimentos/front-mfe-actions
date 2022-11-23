@@ -33,7 +33,12 @@ jobs:
         run: npm install
 
       - run: npm run lint
-      - run: npm run test
+      - run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Generate version file with hash
         run: git rev-parse --short HEAD > git-commit-version.txt &&
