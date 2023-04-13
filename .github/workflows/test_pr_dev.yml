@@ -16,15 +16,6 @@ jobs:
         with:
           node-version: 14.19
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-build-
-            ${{ runner.OS }}-
-
       - run: npm install
       - run: npm run lint
       - run: npm run test:unit
