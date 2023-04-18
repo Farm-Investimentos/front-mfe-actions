@@ -25,6 +25,9 @@ jobs:
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
 
+      - name: Show NPM version
+        run: npm -v
+        
       - run: npm install
       - run: npm run lint
       - run: npm run test:unit
