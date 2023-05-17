@@ -30,7 +30,7 @@ jobs:
           date +"%D %T" >> git-commit-version.txt
 
       - name: Deploy-uat
-        if: github.ref == 'refs/heads/releases' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/releases'
         run: |
           npm run build
           cp git-commit-version.txt dist/
@@ -40,7 +40,7 @@ jobs:
             ./dist s3://front-farm-plataforma-uat/${{ secrets.MFE_CONTEXT }}
 
       - name: Invalidate-cf-uat
-        if: github.ref == 'refs/heads/releases' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/releases'
         uses: chetan/invalidate-cloudfront-action@master
         env:
           DISTRIBUTION: ${{ secrets.CF_UAT }}
