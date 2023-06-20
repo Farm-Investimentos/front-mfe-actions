@@ -1,0 +1,64 @@
+name: Deploy Release (UAT/PRD)
+on:
+  workflow_call:
+
+jobs:
+  reusable_workflow_job:
+    name: Reusable Deploy Release workflow
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: "us-east-1"
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.16
+
+      - name: Install
+        run: npm install
+
+      - run: npm run lint
+      - run: npm run test:unit
+
+      - name: Generate version file with hash
+        run: git rev-parse --short HEAD > git-commit-version.txt &&
+          date +"%D %T" >> git-commit-version.txt
+
+      - name: Deploy-uat
+        if: github.ref == 'refs/heads/releases'
+        run: |
+          npm run build
+          cp git-commit-version.txt dist/
+          aws s3 cp \
+            --recursive \
+            --region us-east-1 \
+            ./dist s3://front-farm-plataforma-uat/${{ secrets.MFE_CONTEXT }}
+
+      - name: Invalidate-cf-uat
+        if: github.ref == 'refs/heads/releases'
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ secrets.CF_UAT }}
+          PATHS: "/${{ secrets.MFE_CONTEXT }}/*"
+
+      - name: Deploy-prd
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          npm run build
+          cp git-commit-version.txt dist/
+          aws s3 cp \
+            --recursive \
+            --region us-east-1 \
+            ./dist s3://front-farm-plataforma-prd/${{ secrets.MFE_CONTEXT }}
+
+      - name: Invalidate-cf-prd
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ secrets.CF_PRD }}
+          PATHS: "/${{ secrets.MFE_CONTEXT }}/*"
