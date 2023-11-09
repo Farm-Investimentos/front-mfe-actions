@@ -1,4 +1,4 @@
-name: Create tag and release PR
+name: Vue 3 Create tag and release PR
 on:
   workflow_call:
 

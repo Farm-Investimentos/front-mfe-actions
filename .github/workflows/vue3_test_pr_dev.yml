@@ -1,4 +1,4 @@
-name: Test PR to Develop
+name: Vue 3 Test PR to Develop
 
 on:
   workflow_call:

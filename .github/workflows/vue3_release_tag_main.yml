@@ -1,4 +1,4 @@
-name: PR from tag into main
+name: Vue 3 PR from tag into main
 on:
   workflow_call:
     inputs:

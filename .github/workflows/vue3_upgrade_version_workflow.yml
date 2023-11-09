@@ -1,4 +1,4 @@
-name: Upgrade version Workflow
+name: Vue 3 Upgrade version Workflow
 
 on:
   workflow_call:

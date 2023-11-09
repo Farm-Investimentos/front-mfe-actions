@@ -1,4 +1,4 @@
-name: Build & Deploy Develop
+name: Vue 3 Build & Deploy Develop
 on:
   workflow_call:
 

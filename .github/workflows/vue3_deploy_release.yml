@@ -1,4 +1,4 @@
-name: Deploy Release (UAT/PRD)
+name: Vue 3 Deploy Release (UAT/PRD)
 on:
   workflow_call:
 
