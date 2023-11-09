@@ -1,0 +1,33 @@
+name: Test PR to Develop
+
+on:
+  workflow_call:
+
+jobs:
+  reusable_workflow_job:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@master
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.9.0
+      
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: Show NPM version
+        run: npm -v
+        
+      - run: npm install
+      - run: npm run lint
+      - run: npm run test:unit
