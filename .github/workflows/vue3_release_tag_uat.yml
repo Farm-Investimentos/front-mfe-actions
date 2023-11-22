@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       tag:
-        description: "Tag name"
+        description: 'Tag name'
         required: true
         type: string
 
@@ -29,21 +29,15 @@ jobs:
         run: |
           git reset --hard ${{ inputs.tag }}
 
-      - name: Push
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Push to new branch
+        run: |
+          git push -u origin develop:release-${{ inputs.tag }}-into-releases
+
+      - name: Create PR
+        uses: repo-sync/pull-request@v2
         with:
-          branch: releases
-          push_options: "--force"
-
-      #- name: Push to new branch
-      #  run: |
-      #    git push -u origin develop:release-${{ inputs.tag }}-into-releases
-
-      #- name: Create PR
-      #  uses: repo-sync/pull-request@v2
-      #  with:
-      #    source_branch: "release-${{ inputs.tag }}-into-releases"
-      #    destination_branch: "releases"
-      #    github_token: ${{ secrets.GITHUB_TOKEN }}
-      #    pr_label: "automerge,triggered pr"
-      #    pr_title: "Pulling ${{ inputs.tag }} into releases"
+          source_branch: "release-${{ inputs.tag }}-into-releases"
+          destination_branch: "releases"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_label: "automerge,triggered pr"
+          pr_title: "Pulling ${{ inputs.tag }} into releases"
