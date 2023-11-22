@@ -37,7 +37,7 @@ jobs:
         run: |
           touch package.json
           git add -A
-          git commit -m "Update package.json - new version v${{ env.PACKAGE_VERSION }}"
+          git commit -m "Update package.json - new version v${{ env.PACKAGE_VERSION }} [skip ci]"
           git push -u origin develop:chore-newversion_${{ env.PACKAGE_VERSION }}
 
       - name: Create PR
@@ -47,4 +47,4 @@ jobs:
           destination_branch: "develop"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_label: "automerge,triggered pr"
-          pr_title: "Pulling chore-newversion_${{ env.PACKAGE_VERSION }} into develop"
+          pr_title: "Pulling chore-newversion_${{ env.PACKAGE_VERSION }} into develop [skip ci]"
