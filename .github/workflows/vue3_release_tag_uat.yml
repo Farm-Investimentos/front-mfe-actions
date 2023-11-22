@@ -32,6 +32,7 @@ jobs:
       - name: Push
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
+          branch: releases
           push_options: "--force"
 
       #- name: Push to new branch
