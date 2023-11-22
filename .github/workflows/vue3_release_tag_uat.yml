@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       tag:
-        description: 'Tag name'
+        description: "Tag name"
         required: true
         type: string
 
@@ -19,7 +19,7 @@ jobs:
       AWS_REGION: "us-east-1"
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with: { fetch-depth: 0 }
 
       - run: git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
@@ -29,15 +29,20 @@ jobs:
         run: |
           git reset --hard ${{ inputs.tag }}
 
-      - name: Push to new branch
-        run: |
-          git push -u origin develop:release-${{ inputs.tag }}-into-releases
-
-      - name: Create PR
-        uses: repo-sync/pull-request@v2
+      - name: Push
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          source_branch: "release-${{ inputs.tag }}-into-releases"
-          destination_branch: "releases"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pr_label: "automerge,triggered pr"
-          pr_title: "Pulling ${{ inputs.tag }} into releases"
+          push_options: "--force"
+
+      #- name: Push to new branch
+      #  run: |
+      #    git push -u origin develop:release-${{ inputs.tag }}-into-releases
+
+      #- name: Create PR
+      #  uses: repo-sync/pull-request@v2
+      #  with:
+      #    source_branch: "release-${{ inputs.tag }}-into-releases"
+      #    destination_branch: "releases"
+      #    github_token: ${{ secrets.GITHUB_TOKEN }}
+      #    pr_label: "automerge,triggered pr"
+      #    pr_title: "Pulling ${{ inputs.tag }} into releases"
