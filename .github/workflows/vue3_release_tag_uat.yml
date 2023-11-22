@@ -29,9 +29,9 @@ jobs:
         run: |
           git reset --hard ${{ inputs.tag }}
       
-          - name: Generate version file with hash
-          run: git rev-parse --short HEAD > git-commit-version.txt &&
-            date +"%D %T" >> git-commit-version.txt
+      - name: Generate version file with hash
+        run: git rev-parse --short HEAD > git-commit-version.txt &&
+             date +"%D %T" >> git-commit-version.txt
   
       - name: Deploy-uat
         run: |
