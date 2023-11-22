@@ -32,6 +32,13 @@ jobs:
       - name: Generate version file with hash
         run: git rev-parse --short HEAD > git-commit-version.txt &&
              date +"%D %T" >> git-commit-version.txt
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.9.0
+
+      - name: Install
+        run: npm install
   
       - name: Deploy-uat
         run: |
