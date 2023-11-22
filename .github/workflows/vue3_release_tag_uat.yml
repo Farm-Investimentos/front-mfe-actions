@@ -1,11 +1,6 @@
 name: Vue 3 PR from tag into releases
 on:
   workflow_call:
-    inputs:
-      tag:
-        description: "Tag name"
-        required: true
-        type: string
 
 jobs:
   reusable_workflow_job:
@@ -32,19 +27,15 @@ jobs:
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: "v"
 
-      - name: Reset head to tag
-        run: |
-          git reset --hard ${{ inputs.tag }}
-
       - name: Push to new branch
         run: |
-          git push -u origin develop:release-${{ inputs.tag }}-into-releases
+          git push -u origin develop:release-${{ env.PACKAGE_VERSION }}-into-releases
 
       - name: Create PR
         uses: repo-sync/pull-request@v2
         with:
-          source_branch: "release-${{ inputs.tag }}-into-releases"
+          source_branch: "release-${{ env.PACKAGE_VERSION }}-into-releases"
           destination_branch: "releases"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_label: "automerge,triggered pr"
-          pr_title: "Pulling ${{ inputs.tag }} into releases"
+          pr_title: "Pulling ${{ env.PACKAGE_VERSION }} into releases"
