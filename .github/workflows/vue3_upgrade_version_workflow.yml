@@ -37,6 +37,20 @@ jobs:
       - name: Echo version from package.json
         run: echo ${{ env.PACKAGE_VERSION }}
 
-      - name: Commit new package.json
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Create PR from chore branch to develop
+        run: |
+          touch package.json
+          git add -A
+          git commit -m "Update package.json - new version v${{ env.PACKAGE_VERSION }} [skip ci]"
+          git push -u origin develop:chore-newversion_${{ env.PACKAGE_VERSION }}
+
+      - name: Create PR
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "chore-newversion_${{ env.PACKAGE_VERSION }}"
+          destination_branch: "develop"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_label: "automerge,triggered pr"
+          pr_title: "Pulling chore-newversion_${{ env.PACKAGE_VERSION }} into develop [skip ci]"
+
      
