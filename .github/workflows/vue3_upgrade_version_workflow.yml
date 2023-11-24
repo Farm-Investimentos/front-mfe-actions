@@ -48,5 +48,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_label: "automerge,triggered pr"
           pr_title: "Pulling chore-newversion_${{ env.PACKAGE_VERSION }} into develop [skip ci]"
-
-     
