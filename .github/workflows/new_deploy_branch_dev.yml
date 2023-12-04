@@ -1,6 +1,12 @@
 name: New - Deploy custom branch to develop
 on:
   workflow_call:
+    inputs:
+      NODE_ENV:
+        description: 'Node env'
+        default: '20.9.0'
+        required: true
+        type: string
 
 jobs:
   reusable_workflow_job:
