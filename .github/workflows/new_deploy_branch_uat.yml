@@ -1,4 +1,4 @@
-name: New - Deploy custom branch to develop
+name: New - Deploy custom branch to uat
 on:
   workflow_call:
     inputs:
@@ -63,10 +63,10 @@ jobs:
           aws s3 cp \
             --recursive \
             --region us-east-1 \
-            ./dist s3://front-farm-plataforma/${{ secrets.MFE_CONTEXT }}
+            ./dist s3://front-farm-plataforma-uat/${{ secrets.MFE_CONTEXT }}
 
       - name: Invalidate Cloudfront
         uses: chetan/invalidate-cloudfront-action@master
         env:
-          DISTRIBUTION: ${{ secrets.CF_DEV }}
+          DISTRIBUTION: ${{ secrets.CF_UAT }}
           PATHS: "/${{ secrets.MFE_CONTEXT }}/*"
