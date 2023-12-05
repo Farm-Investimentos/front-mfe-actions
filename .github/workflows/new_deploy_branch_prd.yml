@@ -68,12 +68,6 @@ jobs:
           DISTRIBUTION: ${{ secrets.CF_PRD }}
           PATHS: "/${{ secrets.MFE_CONTEXT }}/*"
 
-  create_tag:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@master
       - name: Upgrade version in package.json
         run: npm version patch --no-git-tag-version -m "v%s"
       - name: Get version from package.json
