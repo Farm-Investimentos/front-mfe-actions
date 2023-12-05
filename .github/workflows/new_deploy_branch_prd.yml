@@ -87,6 +87,6 @@ jobs:
         run: |
           git config user.email github-actions@github.com
           git config user.name github-actions
-          git add .
+          git add package.json
           git commit -am "Automated bump version ${{ env.PACKAGE_VERSION }}"
           git push
