@@ -89,4 +89,4 @@ jobs:
           git config user.name github-actions
           git add package.json
           git commit -am "Automated bump version ${{ env.PACKAGE_VERSION }}"
-          git push
+          git push --force
