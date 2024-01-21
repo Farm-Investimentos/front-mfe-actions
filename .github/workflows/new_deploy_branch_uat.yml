@@ -53,7 +53,7 @@ jobs:
 
       - name: Generate version file with hash
         run: git rev-parse --short HEAD > info.txt &&
-          date +"%D %T" >> info.txt &&
+          date +"%d/%m/%y %T" >> info.txt &&
           echo ${{github.ref}} >> info.txt
 
       - name: Deploy
