@@ -21,9 +21,36 @@ jobs:
           
       - name: Install
         run: npm install
+      
+      - name: Install Cyclone
+        run: npm install --save-dev @cyclonedx/cyclonedx-npm
 
       - run: npm run lint
       - run: npm run test:coverage
+      - run: npx  @cyclonedx/cyclonedx-npm  --output-format XML --output-file bom.xml --mc-type application
+
+      - name: Process Deptrack URL
+        shell: bash
+        run: |
+          pattern='^(([[:alnum:]]+):\/\/)?(([[:alnum:]]+)@)?([^:^@\/]+)(:([[:digit:]]+))?(\/?[^:^@]?)$'
+          if [[ "${{ secrets.DEPTRACK_URL }}" =~ $pattern ]]; then
+              export DEPTRACK_HOST=${BASH_REMATCH[5]}
+              echo "DEPTRACK_HOST=${DEPTRACK_HOST}" >> $GITHUB_ENV
+          else
+              echo "URL did not match pattern: $url"
+              exit 1
+          fi
+
+      - name: Send SBOM to DepTrack
+        uses: DependencyTrack/gh-upload-sbom@v3.0.0
+        with:
+          serverhostname: ${{ env.DEPTRACK_HOST }}
+          apikey: ${{ secrets.DEPTRACK_API_KEY }}
+          protocol: https
+          projectname: ${{ env.PROJECT_NAME }}
+          projectversion: ${{ env.REVISION }}
+          bomfilename: "target/bom.json"
+          autocreate: true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
