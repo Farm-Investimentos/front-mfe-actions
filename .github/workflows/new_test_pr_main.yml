@@ -55,6 +55,9 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: Build
+        run: npm run build
+        
       - name: Run bundle-stats
         uses: vio/bundle-stats-action@v1
         with:
