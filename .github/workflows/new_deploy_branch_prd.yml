@@ -62,12 +62,6 @@ jobs:
             --region us-east-1 \
             ./dist s3://front-farm-plataforma-prd/${{ secrets.MFE_CONTEXT }}
 
-      - name: Run bundle-stats
-        uses: vio/bundle-stats-action@v1
-        with:
-          webpack-stats-path: 'compilation-stats.json'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Invalidate Cloudfront
         uses: chetan/invalidate-cloudfront-action@master
         env:
