@@ -54,3 +54,9 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Run bundle-stats
+        uses: vio/bundle-stats-action@v1
+        with:
+          webpack-stats-path: 'compilation-stats.json'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
