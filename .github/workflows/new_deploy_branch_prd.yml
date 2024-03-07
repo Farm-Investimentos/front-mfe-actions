@@ -48,6 +48,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Tests
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Generate version file with hash
         run: git rev-parse --short HEAD > info.txt &&
           date +"%d/%m/%y %T" >> info.txt &&
