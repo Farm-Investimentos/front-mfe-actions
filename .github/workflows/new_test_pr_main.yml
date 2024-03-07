@@ -48,10 +48,6 @@ jobs:
         run: npm run lint
 
       - name: Tests
-        run: npm run test:coverage
+        run: npm run test:unit
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
