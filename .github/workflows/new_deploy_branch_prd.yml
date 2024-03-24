@@ -94,7 +94,7 @@ jobs:
           
       - name: Push to new branch
         run: |
-          git push -u origin develop:release-${{ env.PACKAGE_VERSION }}-into-main
+          git push --set-upstream origin release-${{ env.PACKAGE_VERSION }}-into-main
         
       - name: Create PR
         uses: repo-sync/pull-request@v2
