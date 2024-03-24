@@ -94,16 +94,18 @@ jobs:
           
       - name: Push to new branch
         run: |
+          git add package.json
+          git commit -m "Update package.json - new version v${{ env.PACKAGE_VERSION }}"
           git push -u origin main:release-${{ env.PACKAGE_VERSION }}-into-main
         
       - name: Create PR
         uses: repo-sync/pull-request@v2
         with:
-          source_branch: "release-${{ env.PACKAGE_VERSION  }}-into-main"
+          source_branch: "release-${{ env.PACKAGE_VERSION }}-into-main"
           destination_branch: "main"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_label: "automerge,triggered pr"
-          pr_title: "Pulling ${{ inputs.tag }} into main [skip ci]"
+          pr_title: "Pulling ${{ env.PACKAGE_VERSION }} into main [skip ci]"
           
       #- name: Commit report
       #  run: |
