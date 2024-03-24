@@ -98,7 +98,7 @@ jobs:
           git config user.name github-actions
           git add package.json
           git commit -m "Update package.json - new version v${{ env.PACKAGE_VERSION }}"
-          git push -u origin main:release-${{ env.PACKAGE_VERSION }}-into-main
+          git push -u origin main:release-${{ env.PACKAGE_VERSION }}-into-main --no-verify
         
       - name: Create PR
         uses: repo-sync/pull-request@v2
