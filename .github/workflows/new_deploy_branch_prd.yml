@@ -91,10 +91,20 @@ jobs:
           body: ${{steps.changelog.outputs.changelog}}
           draft: false
           prerelease: false
-      - name: Commit report
-        run: |
-          git config user.email github-actions@github.com
-          git config user.name github-actions
-          git add package.json
-          git commit -am "Automated bump version ${{ env.PACKAGE_VERSION }}"
-          git push --force
+          
+      - name: Create PR
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "release-${{ env.PACKAGE_VERSION  }}-into-main"
+          destination_branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_label: "automerge,triggered pr"
+          pr_title: "Pulling ${{ inputs.tag }} into main [skip ci]"
+          
+      #- name: Commit report
+      #  run: |
+      #    git config user.email github-actions@github.com
+      #    git config user.name github-actions
+      #    git add package.json
+      #    git commit -am "Automated bump version ${{ env.PACKAGE_VERSION }}"
+      #    git push --force
