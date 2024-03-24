@@ -92,6 +92,10 @@ jobs:
           draft: false
           prerelease: false
           
+      - name: Push to new branch
+        run: |
+          git push -u origin develop:release-${{ inputs.tag }}-into-main
+        
       - name: Create PR
         uses: repo-sync/pull-request@v2
         with:
