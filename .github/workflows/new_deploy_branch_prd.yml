@@ -97,7 +97,7 @@ jobs:
           git config user.email github-actions@github.com
           git config user.name github-actions
           git add package.json
-          git commit -m "chore: update package.json - new version v${{ env.PACKAGE_VERSION }}"
+          git commit -m "chore: update package.json - new version v${{ env.PACKAGE_VERSION }} [skip ci]"
           git push -u origin main:release-${{ env.PACKAGE_VERSION }}-into-main --no-verify
         
       - name: Create PR
