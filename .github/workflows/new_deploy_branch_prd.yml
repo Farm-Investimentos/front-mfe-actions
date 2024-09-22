@@ -57,7 +57,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: fix code coverage paths
-        working-directory: ./frontend/coverage
         run: |
           sed -i 's/\/home\/runner\/work\/front-mfe-${{ secrets.MFE_CONTEXT }}\/front-mfe-${{ secrets.MFE_CONTEXT }}\//\/github\/workspace\//g' lcov.info
           
