@@ -95,7 +95,7 @@ jobs:
       - uses: sonarsource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_MFE }}
-          SONAR_HOST_URL: https://sonarqube.dev-api.portalfarm.com.br
+          #SONAR_HOST_URL: https://sonarqube.dev-api.portalfarm.com.br
           
       - name: Push to new branch
         run: |
