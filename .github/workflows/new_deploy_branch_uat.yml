@@ -65,8 +65,4 @@ jobs:
             --region us-east-1 \
             ./dist s3://front-farm-plataforma-uat/${{ secrets.MFE_CONTEXT }}
 
-      - name: Invalidate Cloudfront
-        uses: chetan/invalidate-cloudfront-action@master
-        env:
-          DISTRIBUTION: ${{ secrets.CF_UAT }}
-          PATHS: "/${{ secrets.MFE_CONTEXT }}/*"
+     
