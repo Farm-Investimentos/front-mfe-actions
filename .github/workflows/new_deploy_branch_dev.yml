@@ -18,6 +18,12 @@ jobs:
       - name: Selected branch
         run: echo ${{github.ref}}
 
+      - name: Set project name
+        shell: bash
+        run: |
+            PROJECT_NAME=$(basename $GITHUB_REPOSITORY)
+            echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+
       - name: Checkout source code
         uses: actions/checkout@master
 
@@ -63,7 +69,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_TOOLS }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL_TOOLS }}
         with:
-          args: -Dsonar.projectKey=${{ secrets.SONAR_TOKEN_TOOLS }}
+          args: -Dsonar.projectKey=${{ env.PROJECT_NAME }}
   
       - name: Deploy
         run: |
