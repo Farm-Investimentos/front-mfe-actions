@@ -9,7 +9,7 @@ on:
 jobs:
   reusable_workflow_job:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -48,6 +48,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Tests
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage report as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/lcov.info
+        
       - name: Generate version file with hash
         run: git rev-parse --short HEAD > info.txt &&
           date +"%d/%m/%y %T" >> info.txt &&
@@ -83,10 +97,35 @@ jobs:
           body: ${{steps.changelog.outputs.changelog}}
           draft: false
           prerelease: false
-      - name: Commit report
+
+      - uses: sonarsource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: ${{ github.workspace }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_MFE }}
+          SONAR_HOST_URL: https://sonarqube.dev-api.portalfarm.com.br
+          
+      - name: Push to new branch
         run: |
           git config user.email github-actions@github.com
           git config user.name github-actions
           git add package.json
-          git commit -am "Automated bump version ${{ env.PACKAGE_VERSION }}"
-          git push --force
+          git commit -m "chore: update package.json - new version v${{ env.PACKAGE_VERSION }} [skip ci]"
+          git push -u origin main:release-${{ env.PACKAGE_VERSION }}-into-main --no-verify
+        
+      - name: Create PR
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "release-${{ env.PACKAGE_VERSION }}-into-main"
+          destination_branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_label: "automerge,triggered pr"
+          pr_title: "Pulling ${{ env.PACKAGE_VERSION }} into main [skip ci]"
+          
+      #- name: Commit report
+      #  run: |
+      #    git config user.email github-actions@github.com
+      #    git config user.name github-actions
+      #    git add package.json
+      #    git commit -am "Automated bump version ${{ env.PACKAGE_VERSION }}"
+      #    git push --force

@@ -50,7 +50,9 @@ jobs:
       - name: Tests
         run: npm run test:coverage
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_MFE }}
+          SONAR_HOST_URL: https://sonarqube.dev-api.portalfarm.com.br
+
+

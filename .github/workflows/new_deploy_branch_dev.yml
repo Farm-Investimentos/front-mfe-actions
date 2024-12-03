@@ -70,3 +70,13 @@ jobs:
         env:
           DISTRIBUTION: ${{ secrets.CF_DEV }}
           PATHS: "/${{ secrets.MFE_CONTEXT }}/*"
+  quality_gates:
+    name: Run QA gates
+    needs: reusable_workflow_job
+    runs-on: ubuntu-latest
+    steps:
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_TOOLS }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL_TOOLS }}
