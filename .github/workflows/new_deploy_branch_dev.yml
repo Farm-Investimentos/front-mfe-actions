@@ -23,6 +23,7 @@ jobs:
         run: |
             PROJECT_NAME=$(basename $GITHUB_REPOSITORY)
             echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+            echo REVISION=${GITHUB_REF##*/} >> $GITHUB_ENV
 
       - name: Checkout source code
         uses: actions/checkout@master
@@ -66,6 +67,16 @@ jobs:
         uses: CycloneDX/gh-node-module-generatebom@v1
         with:
           output: './bom.xml'
+
+      - name: Send SBOM to DepTrack
+        uses: DependencyTrack/gh-upload-sbom@v3.0.0
+        with:
+          serverHostname: deptrack.tools.portalfarm.com.br
+          apiKey: ${{ secrets.DEPTRACK_API_KEY }}
+          projectName: ${{ env.PROJECT_NAME }}
+          projectVersion: ${{ env.REVISION }}
+          bomFilename: "./bom.xml"
+          autoCreate: true 
   
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
