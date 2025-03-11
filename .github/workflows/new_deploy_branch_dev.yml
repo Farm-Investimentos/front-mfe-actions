@@ -62,6 +62,11 @@ jobs:
           date +"%d/%m/%y %T" >> info.txt &&
           echo ${{github.ref}} >> info.txt
 
+      - name: Create SBOM step
+        uses: CycloneDX/gh-node-module-generatebom@v1
+        with:
+          output: './bom.xml'
+  
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         continue-on-error: true
@@ -71,10 +76,6 @@ jobs:
         with:
           args: -Dsonar.projectKey=${{ env.PROJECT_NAME }}
 
-      - name: Create SBOM step
-        uses: CycloneDX/gh-node-module-generatebom@v1
-        with:
-          output: './bom.xml'
 #      - name: Generates BOM and upload to DependencyTrack
 #        id: riskscoreFromDT
 #        uses:  Quobis/action-owasp-dependecy-track-check@main
