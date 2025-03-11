@@ -62,14 +62,14 @@ jobs:
           date +"%d/%m/%y %T" >> info.txt &&
           echo ${{github.ref}} >> info.txt
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4.1.0
-        continue-on-error: true
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_TOOLS }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL_TOOLS }}
-        with:
-          args: -Dsonar.projectKey=${{ env.PROJECT_NAME }}
+#      - name: SonarQube Scan
+#        uses: SonarSource/sonarqube-scan-action@v4.1.0
+#        continue-on-error: true
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_TOOLS }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL_TOOLS }}
+#        with:
+#          args: -Dsonar.projectKey=${{ env.PROJECT_NAME }}
 
 #      - name: Generates BOM and upload to DependencyTrack
 #        id: riskscoreFromDT
