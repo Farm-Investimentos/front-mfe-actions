@@ -70,6 +70,14 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL_TOOLS }}
         with:
           args: -Dsonar.projectKey=${{ env.PROJECT_NAME }}
+
+      - name: Generates BOM and upload to DependencyTrack
+        id: riskscoreFromDT
+        uses:  Quobis/action-owasp-dependecy-track-check@main
+        with:
+          url: https://deptrack.tools.portalfarm.com.br
+          key: ${{ secrets.DEPTRACK_API_KEY }}
+          language: 'nodejs'
   
       - name: Deploy
         run: |
