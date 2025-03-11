@@ -71,13 +71,17 @@ jobs:
         with:
           args: -Dsonar.projectKey=${{ env.PROJECT_NAME }}
 
-      - name: Generates BOM and upload to DependencyTrack
-        id: riskscoreFromDT
-        uses:  Quobis/action-owasp-dependecy-track-check@main
+      - name: Create SBOM step
+        uses: CycloneDX/gh-node-module-generatebom@v1
         with:
-          url: https://deptrack.tools.portalfarm.com.br
-          key: ${{ secrets.DEPTRACK_API_KEY }}
-          language: 'nodejs'
+          output: './bom.xml'
+#      - name: Generates BOM and upload to DependencyTrack
+#        id: riskscoreFromDT
+#        uses:  Quobis/action-owasp-dependecy-track-check@main
+#        with:
+#          url: https://deptrack.tools.portalfarm.com.br
+#          key: ${{ secrets.DEPTRACK_API_KEY }}
+#          language: 'nodejs'
   
       - name: Deploy
         run: |
