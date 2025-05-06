@@ -63,38 +63,7 @@ jobs:
           date +"%d/%m/%y %T" >> info.txt &&
           echo ${{github.ref}} >> info.txt
 
-      - name: Create SBOM step
-        uses: CycloneDX/gh-node-module-generatebom@v1
-        with:
-          output: './bom.xml'
-
-      - name: Send SBOM to DepTrack
-        uses: DependencyTrack/gh-upload-sbom@v3.0.0
-        with:
-          serverHostname: deptrack.tools.portalfarm.com.br
-          apiKey: ${{ secrets.DEPTRACK_API_KEY }}
-          projectName: ${{ env.PROJECT_NAME }}
-          projectVersion: ${{ env.REVISION }}
-          bomFilename: "./bom.xml"
-          autoCreate: true 
-  
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
-        continue-on-error: true
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_TOOLS }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL_TOOLS }}
-        with:
-          args: -Dsonar.projectKey=${{ env.PROJECT_NAME }}
-
-#      - name: Generates BOM and upload to DependencyTrack
-#        id: riskscoreFromDT
-#        uses:  Quobis/action-owasp-dependecy-track-check@main
-#        with:
-#          url: https://deptrack.tools.portalfarm.com.br
-#          key: ${{ secrets.DEPTRACK_API_KEY }}
-#          language: 'nodejs'
-  
+      ## Em DEV, queremos que o código vá logo para o bucket. A análise pode ficar para depois
       - name: Deploy
         run: |
           npm run build
@@ -109,3 +78,33 @@ jobs:
         env:
           DISTRIBUTION: ${{ secrets.CF_DEV }}
           PATHS: "/${{ secrets.MFE_CONTEXT }}/*"
+
+      - name: Create SBOM step
+        uses: CycloneDX/gh-node-module-generatebom@v1
+        with:
+          output: './bom.xml'
+
+      - name: Send SBOM to DepTrack
+        uses: DependencyTrack/gh-upload-sbom@v3.0.0
+        with:
+          serverHostname: deptrack.tools.portalfarm.com.br
+          apiKey: ${{ secrets.DEPTRACK_API_KEY }}
+          projectName: ${{ env.PROJECT_NAME }}
+          projectVersion: ${{ env.REVISION }}
+          bomFilename: "./bom.xml"
+          autoCreate: true 
+
+      - name: Run Tests
+        run: |
+          npm install --save-dev jest-junit && \
+          npm run test:coverage
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_TOOLS }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL_TOOLS }}
+        with:
+          args: -Dsonar.projectKey=${{ env.PROJECT_NAME }}
+
