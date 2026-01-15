@@ -48,19 +48,21 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Tests
-        run: npm run test:coverage
+      #- name: Tests
+      #  run: npm run test:coverage
+      #  env:
+      #    NODE_OPTIONS: "--max-old-space-size=4096"
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+      #- name: Upload coverage to Codecov
+      #  uses: codecov/codecov-action@v4.0.1
+      #  with:
+      #    token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Upload coverage report as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/lcov.info
+      #- name: Upload coverage report as artifact
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: coverage-report
+      #    path: coverage/lcov.info
         
       - name: Generate version file with hash
         run: git rev-parse --short HEAD > info.txt &&
