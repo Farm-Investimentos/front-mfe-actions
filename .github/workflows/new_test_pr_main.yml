@@ -37,22 +37,35 @@ jobs:
         run: echo ${{ inputs.NODE_VERSION }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install dependencies (clean)
+        run: npm ci
 
       - name: Lint
         run: npm run lint
 
-      - name: Tests
-        run: npm run test:coverage
+      - name: Tests with verbose output
+        run: |
+            npm run test:coverage 2>&1 | tee test-output.log
+            exit ${PIPESTATUS[0]}
 
-      - uses: sonarsource/sonarqube-scan-action@master
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+            name: test-logs
+            path: test-output.log
+
+      - name: SonarQube Scan
+        if: success()
+        uses: sonarsource/sonarqube-scan-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_MFE }}
-          SONAR_HOST_URL: https://sonarqube.dev-api.portalfarm.com.br
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_MFE }}
+            SONAR_HOST_URL: https://sonarqube.dev-api.portalfarm.com.br
 
 
