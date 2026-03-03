@@ -41,7 +41,7 @@ jobs:
           node-version: ${{ inputs.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: List the state of node modules
