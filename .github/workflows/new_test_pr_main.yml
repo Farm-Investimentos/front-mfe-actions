@@ -5,6 +5,21 @@ on:
       NODE_VERSION:
         required: true
         type: string
+      DIFF_COVERAGE_MODE:
+        description: 'PLAT-40: "warn" comenta e nao bloqueia; "enforce" reprova o check'
+        required: false
+        type: string
+        default: 'warn'
+      MIN_COVERAGE:
+        description: 'PLAT-40: percentual minimo das linhas alteradas cobertas por teste'
+        required: false
+        type: string
+        default: '80'
+      COVERAGE_FILES:
+        description: 'PLAT-40: glob dos relatorios LCOV'
+        required: false
+        type: string
+        default: 'coverage/lcov.info'
 
 jobs:
   reusable_workflow_job:
@@ -13,6 +28,10 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5.0.1
+        with:
+          # PLAT-40: o Sonar precisa do historico para o blame e o diff-cover
+          # precisa da branch base para calcular a cobertura do diff.
+          fetch-depth: 0
 
       - name: Cache node modules
         id: cache-npm
@@ -51,7 +70,23 @@ jobs:
       - name: Tests
         run: npm run test:coverage
 
+      # PLAT-40: sem lcov.reportPaths o Sonar analisa o PR mas importa 0% de
+      # cobertura ("No report imported, no coverage information will be imported").
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_MFE }}
           SONAR_HOST_URL: https://sonarqube.dev-api.portalfarm.com.br
+        with:
+          args: >
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+
+      # PLAT-40: cobertura do codigo alterado. Modo aviso na onda 2 — comenta no
+      # PR e nao bloqueia merge. Promocao para enforce e decisao por repo.
+      - name: Diff coverage
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: Farm-Investimentos/devops-actions/actions/diff-coverage@main
+        with:
+          coverage-files: ${{ inputs.COVERAGE_FILES }}
+          min-coverage: ${{ inputs.MIN_COVERAGE }}
+          mode: ${{ inputs.DIFF_COVERAGE_MODE }}
+          source-extensions: 'ts,tsx,js,jsx,vue'
