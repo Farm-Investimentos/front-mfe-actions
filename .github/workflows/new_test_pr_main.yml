@@ -70,6 +70,17 @@ jobs:
       - name: Tests
         run: npm run test:coverage
 
+      # PLAT-40: o Sonar quer a lista separada por virgula; a action de diff
+      # coverage quer separada por espaco. Deriva as duas do mesmo COVERAGE_FILES
+      # para que os dois consumidores nunca leiam relatorios diferentes.
+      - name: Caminho dos relatorios de cobertura
+        id: cobertura
+        env:
+          COVERAGE_FILES: ${{ inputs.COVERAGE_FILES }}
+        run: |
+          set -euo pipefail
+          echo "sonar=$(tr -s ' ' ',' <<<"${COVERAGE_FILES}" | sed 's/^,//;s/,$//')" >> "$GITHUB_OUTPUT"
+
       # PLAT-40: sem lcov.reportPaths o Sonar analisa o PR mas importa 0% de
       # cobertura ("No report imported, no coverage information will be imported").
       - uses: sonarsource/sonarqube-scan-action@master
@@ -78,7 +89,7 @@ jobs:
           SONAR_HOST_URL: https://sonarqube.dev-api.portalfarm.com.br
         with:
           args: >
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=${{ steps.cobertura.outputs.sonar }}
 
       # PLAT-40: cobertura do codigo alterado. Modo aviso na onda 2 — comenta no
       # PR e nao bloqueia merge. Promocao para enforce e decisao por repo.
