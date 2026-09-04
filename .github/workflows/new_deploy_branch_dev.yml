@@ -67,7 +67,7 @@ jobs:
             ./dist s3://front-farm-plataforma/${{ secrets.MFE_CONTEXT }}
 
       - name: Invalidate Cloudfront
-        uses: chetan/invalidate-cloudfront-action@master
+        uses: chetan/invalidate-cloudfront-action@6adb1f613f4102ad81cd08a7ba83b8abe490cb8d # v2
         env:
           DISTRIBUTION: ${{ secrets.CF_DEV }}
           PATHS: "/${{ secrets.MFE_CONTEXT }}/*"
