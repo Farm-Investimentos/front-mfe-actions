@@ -6,10 +6,13 @@ on:
         required: true
         type: string
       DIFF_COVERAGE_MODE:
-        description: 'PLAT-40: "warn" comenta e nao bloqueia; "enforce" reprova o check'
+        description: >-
+          PLAT-40. Vazio (padrao): usa a variavel COVERAGE_MODE do repositorio ou
+          da organizacao, e "warn" se ela nao existir. Preencher so para fixar o
+          modo num MFE, independente da variavel.
         required: false
         type: string
-        default: 'warn'
+        default: ''
       MIN_COVERAGE:
         description: 'PLAT-40: percentual minimo das linhas alteradas cobertas por teste'
         required: false
@@ -68,6 +71,10 @@ jobs:
         run: npm run lint
 
       - name: Tests
+        # PLAT-40: em warn nada reprova o job — nem a suite quebrada. E isso que
+        # permite deixar o contexto como required ja na fase de alerta: virar o
+        # bloqueio depois e so criar/trocar a variavel COVERAGE_MODE.
+        continue-on-error: ${{ (inputs.DIFF_COVERAGE_MODE != '' && inputs.DIFF_COVERAGE_MODE || vars.COVERAGE_MODE || 'warn') != 'enforce' }}
         run: npm run test:coverage
 
       # PLAT-40: o Sonar quer a lista separada por virgula; a action de diff
@@ -99,5 +106,5 @@ jobs:
         with:
           coverage-files: ${{ inputs.COVERAGE_FILES }}
           min-coverage: ${{ inputs.MIN_COVERAGE }}
-          mode: ${{ inputs.DIFF_COVERAGE_MODE }}
+          mode: ${{ (inputs.DIFF_COVERAGE_MODE != '' && inputs.DIFF_COVERAGE_MODE || vars.COVERAGE_MODE || 'warn') }}
           source-extensions: 'ts,tsx,js,jsx,vue'
